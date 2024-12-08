@@ -47,14 +47,28 @@ void main() async {
     final completer = Completer<String>();
     for (String domain in domains) {
       try {
-        var res = await Utils.get(domain);
-        if (res != null && res['code'] == 1) {
-          if (!completer.isCompleted) {
-            completer.complete("https://${res['data']}");
+        print("Checking domain: http://$domain/index/check");
+        var res = await Utils.get("http://$domain/index/check");
+        print("Response for $domain: $res");
+        
+        if (res != null && res is Map<String, dynamic>) {
+          var code = res['code'];
+          var data = res['data'];
+          print("Code: $code (${code.runtimeType}), Data: $data (${data?.runtimeType})");
+          
+          if ((code == 1 || code == '1') && data != null) {
+            if (!completer.isCompleted) {
+              var finalUrl = "https://$data";
+              print("Selected domain: $finalUrl");
+              completer.complete(finalUrl);
+              break;
+            }
           }
         }
-      } catch (e) {
-        print("Error checking domain $domain: $e");
+      } catch (e, stackTrace) {
+        print("Error checking domain $domain:");
+        print("Error: $e");
+        print("Stack trace: $stackTrace");
       }
     }
     if (!completer.isCompleted) {
@@ -69,7 +83,7 @@ void main() async {
   Log.init();
   if (agreement) {
     // 域名优选
-    Utils.appUrl = await getBestDomain(['http://dsm.apaipai.top/index/check', 'http://dsm.flutter.fit/index/check']);
+    Utils.appUrl = await getBestDomain(['dsm.apaipai.top', 'dsm.flutter.fit']);
     // 判断是否登录
     bool isForever = false;
     DateTime? noAdTime;
