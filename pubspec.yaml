@@ -32,9 +32,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.5
-#  dio: ^4.0.6
   dio: ^5.3.2
-  #  fluttertoast: ^7.1.6
   fluttertoast: ^8.2.2
   package_info_plus: ^4.1.0
   sp_util: ^2.0.3
@@ -73,14 +71,10 @@ dependencies:
   syncfusion_flutter_datepicker: ^23.1.40
   syncfusion_flutter_gauges: ^23.1.40
   wechat_assets_picker: ^8.7.1  # 8.5.0 起不再支持flutter3.7
-  fluwx: ^4.3.2
-#  better_player:
-#    git: https://github.com/AnonymHK/betterplayer.git
   device_info_plus: ^9.1.0
   xml2json: ^6.2.0 # 6.0.0起不支持 flutter 3.7
 #  wake_on_lan: ^3.0.0
   dartssh2: ^2.8.2
-  pangle_flutter: ^2.0.1  # 穿山甲广告 2.0.0起不支持 flutter 3.7
   xterm: ^3.5.0
   draggable_scrollbar: 0.1.0
   loading_animation_widget: ^1.2.0+4
@@ -122,14 +116,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-fluwx:
-  app_id: 'wxabdf23571f34b49b'
-  debug_logging: true # Logging in debug mode.
-  android:
-  #    interrupt_wx_request: true # Defaults to true.
-  #    flutter_activity: 'MainActivity' # Defaults to app's launcher
-  ios:
-    universal_link: https://dsm.apaipai.top/app/
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

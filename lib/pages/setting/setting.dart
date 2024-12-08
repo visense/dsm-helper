@@ -10,7 +10,6 @@ import 'package:dsm_helper/pages/setting/dialogs/feedback_dialog.dart';
 import 'package:dsm_helper/pages/setting/dialogs/logout_dialog.dart';
 import 'package:dsm_helper/pages/setting/dialogs/shutdown_dialog.dart';
 import 'package:dsm_helper/pages/setting/dialogs/ssh_dialog.dart';
-import 'package:dsm_helper/pages/setting/vip.dart';
 import 'package:dsm_helper/providers/dark_mode.dart';
 import 'package:dsm_helper/pages/setting/feedback.dart';
 import 'package:dsm_helper/pages/setting/helper_setting.dart';
@@ -529,14 +528,6 @@ class _SettingState extends State<Setting> {
             ),
             Column(
               children: [
-                if (Utils.notReviewAccount && Utils.vipExpireTime.difference(DateTime.now()).inDays < 7 && !Utils.vipForever)
-                  SettingItem(
-                    name: "会员中心",
-                    icon: "vip",
-                    onPressed: () async {
-                      context.push(Vip(), name: "vip");
-                    },
-                  ),
                 SettingItem(name: "主题", icon: "theme", onPressed: onTheme),
                 SettingItem(
                   name: "终端",
@@ -562,11 +553,7 @@ class _SettingState extends State<Setting> {
                   name: "问题反馈",
                   icon: "feedback",
                   onPressed: () async {
-                    if (Utils.notReviewAccount) {
-                      FeedbackDialog.show(context: context);
-                    } else {
-                      context.push(Feedback(), name: "feedback");
-                    }
+                    FeedbackDialog.show(context: context);
                   },
                 ),
               ],
