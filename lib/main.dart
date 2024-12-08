@@ -32,9 +32,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:fluwx/fluwx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:pangle_flutter/pangle_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sp_util/sp_util.dart';
 import '/providers/dark_mode.dart';
@@ -66,27 +64,11 @@ void main() async {
   bool agreement = SpUtil.getBool("agreement", defValue: false)!;
   Log.init();
   if (agreement) {
-    Fluwx fluwx = Fluwx();
-    fluwx.registerApi(appId: "wxabdf23571f34b49b", universalLink: "https://dsm.apaipai.top/app/");
-    // print("初始化穿山甲");
-    await pangle.init(
-      iOS: IOSConfig(
-        appId: '5215470',
-        logLevel: PangleLogLevel.error,
-      ),
-      android: AndroidConfig(
-        appId: '5215463',
-        debug: false,
-        allowShowNotify: true,
-      ),
-    );
     // 域名优选
     Utils.appUrl = await getBestDomain(['http://dsm.apaipai.top/index/check', 'http://dsm.flutter.fit/index/check']);
-    // 是否关闭广告
     // 判断是否登录
     bool isForever = false;
     DateTime? noAdTime;
-    Utils.isWechatInstalled = await fluwx.isWeChatInstalled;
     String userToken = SpUtil.getString("user_token", defValue: '')!;
     String noAdTimeStr = SpUtil.getString("no_ad_time", defValue: '')!;
     if (noAdTimeStr.isNotBlank) {
@@ -119,10 +101,6 @@ void main() async {
       }
     } else {
       SpUtil.remove("no_ad_time");
-      // pangle.loadSplashAd(
-      //   iOS: IOSSplashConfig(slotId: '887561543'),
-      //   android: AndroidSplashConfig(slotId: '887561531', isExpress: false),
-      // );
     }
   }
   // await FlutterDownloader.initialize(debug: true, ignoreSsl: true);

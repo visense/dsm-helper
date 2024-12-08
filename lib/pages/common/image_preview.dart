@@ -8,7 +8,6 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
-import 'package:fluwx/fluwx.dart';
 
 class ImagePreview extends StatefulWidget {
   final List<String> images;
@@ -244,16 +243,6 @@ class _ImagePreviewState extends State<ImagePreview> with SingleTickerProviderSt
                   //     },
                   //   );
                   // },
-                  // heroBuilderForSlidingPage: (Widget result) {
-                  //   return Hero(
-                  //     tag: widget.tag ?? item,
-                  //     child: result,
-                  //     flightShuttleBuilder: (BuildContext flightContext, Animation<double> animation, HeroFlightDirection flightDirection, BuildContext fromHeroContext, BuildContext toHeroContext) {
-                  //       final Hero hero = (flightDirection == HeroFlightDirection.pop ? fromHeroContext.widget : toHeroContext.widget) as Hero;
-                  //       return hero.child;
-                  //     },
-                  //   );
-                  // },
                   initGestureConfigHandler: (state) {
                     double initialScale = 1.0;
                     if (state.extendedImageInfo != null && state.extendedImageInfo?.image != null) {
@@ -379,53 +368,74 @@ class _ImagePreviewState extends State<ImagePreview> with SingleTickerProviderSt
 
               return Column(
                 children: [
-                  if (Utils.isWechatInstalled)
-                    SafeArea(
-                      child: Container(
-                        height: 56,
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        alignment: Alignment.centerRight,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: widget.names != null ? FileName(widget.names!, currentIndex, rebuildIndex) : Container(),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Fluwx fluwx = Fluwx();
-                                WeChatImage wechatImage;
-                                if (widget.images[currentIndex].startsWith("http")) {
-                                  wechatImage = WeChatImage.network(widget.images[currentIndex]);
-                                } else if (widget.images[currentIndex].startsWith("/")) {
-                                  wechatImage = WeChatImage.file(File(widget.images[currentIndex]));
+                  SafeArea(
+                    child: Container(
+                      height: 56,
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      alignment: Alignment.centerRight,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: widget.names != null ? FileName(widget.names!, currentIndex, rebuildIndex) : Container(),
+                          ),
+                          CupertinoButton(
+                            onPressed: () {
+                              Utils.saveImage(widget.images[currentIndex], context: context).then((res) {
+                                if (res['code'] == 1) {
+                                  Utils.toast("已保存到相册");
                                 } else {
-                                  Utils.toast("暂不支持分享此图片");
-                                  return;
+                                  Utils.toast("图片下载失败");
                                 }
-                                fluwx.share(
-                                  WeChatShareImageModel(wechatImage, scene: WeChatScene.session),
-                                );
+                              });
+                            },
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(25),
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            child: Row(
+                              children: <Widget>[
+                                Icon(
+                                  Icons.file_download,
+                                  size: 13,
+                                ),
+                                Text(
+                                  " 保存图片",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          if (widget.paths != null && widget.paths!.length > currentIndex)
+                            CupertinoButton(
+                              onPressed: () {
+                                deleteFile(currentIndex);
                               },
-                              child: Image.asset(
-                                "assets/icons/wechat.png",
-                                width: 24,
+                              child: Icon(
+                                Icons.delete_forever,
+                                size: 13,
                               ),
-                            )
-                          ],
-                        ),
+                            ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: Text(
+                              "${currentIndex + 1} / ${widget.images.length}",
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  Spacer(),
-                  MySwiperPlugin(
-                    widget.images,
-                    currentIndex,
-                    rebuildIndex,
-                    onDelete: widget.paths != null && widget.paths!.length > currentIndex
-                        ? (index) {
-                            deleteFile(index);
-                          }
-                        : null,
                   ),
+                  Spacer(),
                 ],
               );
             },
@@ -473,83 +483,6 @@ class FileName extends StatelessWidget {
     return StreamBuilder<int>(
       builder: (BuildContext context, data) {
         return Text(data.data! < names.length ? names[data.data!] : "");
-      },
-      initialData: index,
-      stream: reBuild.stream,
-    );
-  }
-}
-
-class MySwiperPlugin extends StatelessWidget {
-  final List pics;
-  final int index;
-  final StreamController<int> reBuild;
-  final Function(int)? onDelete;
-  MySwiperPlugin(this.pics, this.index, this.reBuild, {this.onDelete});
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<int>(
-      builder: (BuildContext context, data) {
-        return SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              children: <Widget>[
-                CupertinoButton(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius: BorderRadius.circular(20),
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  onPressed: () {
-                    Utils.saveImage(pics[data.data!], context: context).then((res) {
-                      if (res['code'] == 1) {
-                        Utils.toast("已保存到相册");
-                      } else {
-                        Utils.toast("图片下载失败");
-                      }
-                    });
-                  },
-                  child: Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.file_download,
-                        size: 13,
-                      ),
-                      Text(
-                        " 保存图片",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ),
-                Spacer(),
-                if (onDelete != null)
-                  CupertinoButton(
-                    onPressed: () {
-                      onDelete?.call(data.data!);
-                    },
-                    child: Icon(
-                      Icons.delete_forever,
-                      size: 13,
-                    ),
-                  ),
-                SizedBox(
-                  width: 10,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Text(
-                    "${data.data! + 1} / ${pics.length}",
-                    style: TextStyle(fontSize: 12),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
       },
       initialData: index,
       stream: reBuild.stream,

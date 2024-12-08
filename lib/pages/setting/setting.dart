@@ -444,8 +444,12 @@ class _SettingState extends State<Setting> {
                               child: Row(
                                 children: [
                                   CupertinoButton(
-                                    onPressed: () {
-                                      LogoutDialog.show(context: context, otpEnable: normalUser.otpEnable == true);
+                                    onPressed: () async {
+                                      LogoutDialog.show(context: context).then((value) {
+                                        if (value == true) {
+                                          context.push(SelectServer(), name: "select_server", replace: true);
+                                        }
+                                      });
                                     },
                                     child: Image.asset(
                                       "assets/icons/exit.png",
