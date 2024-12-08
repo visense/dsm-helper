@@ -6,12 +6,10 @@ import 'package:dsm_helper/models/Syno/Core/NormalUser.dart';
 import 'package:dsm_helper/models/Syno/Core/Terminal.dart';
 import 'package:dsm_helper/pages/backup/backup.dart';
 import 'package:dsm_helper/pages/server/select_server.dart';
-import 'package:dsm_helper/pages/setting/dialogs/feedback_dialog.dart';
 import 'package:dsm_helper/pages/setting/dialogs/logout_dialog.dart';
 import 'package:dsm_helper/pages/setting/dialogs/shutdown_dialog.dart';
 import 'package:dsm_helper/pages/setting/dialogs/ssh_dialog.dart';
 import 'package:dsm_helper/providers/dark_mode.dart';
-import 'package:dsm_helper/pages/setting/feedback.dart';
 import 'package:dsm_helper/pages/setting/helper_setting.dart';
 import 'package:dsm_helper/pages/terminal/select_server.dart';
 import 'package:dsm_helper/pages/user/setting.dart';
@@ -27,43 +25,46 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide Feedback;
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingItem extends StatelessWidget {
   final String name;
   final String icon;
-  final OnPressed? onPressed;
-  const SettingItem({required this.name, required this.icon, this.onPressed, super.key});
-
+  final Function()? onPressed;
+  const SettingItem({super.key, required this.name, required this.icon, this.onPressed});
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 10),
-      child: CupertinoButton(
-        onPressed: onPressed,
-        // margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      onPressed: onPressed,
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         padding: EdgeInsets.all(16),
-        color: AppTheme.of(context)?.cardColor,
-        borderRadius: BorderRadius.circular(10),
-
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: Row(
           children: [
             Image.asset(
               "assets/icons/$icon.png",
               width: 24,
+              height: 24,
             ),
-            SizedBox(
-              width: 10,
-            ),
+            SizedBox(width: 10),
             Expanded(
               child: Text(
-                "$name",
-                style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
+                name,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black87,
+                ),
               ),
             ),
             Icon(
               CupertinoIcons.right_chevron,
-              color: AppTheme.of(context)?.placeholderColor,
               size: 16,
+              color: Colors.grey,
             ),
           ],
         ),
@@ -530,38 +531,48 @@ class _SettingState extends State<Setting> {
             SizedBox(
               height: 20,
             ),
-            Column(
-              children: [
-                SettingItem(name: "主题", icon: "theme", onPressed: onTheme),
-                SettingItem(
-                  name: "终端",
-                  icon: "terminal",
-                  onPressed: () {
-                    context.push(SelectTerminalServer(), name: "select_server");
-                  },
-                ),
-                SettingItem(
-                  name: "相册备份",
-                  icon: "upload_cloud",
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      CupertinoPageRoute(
-                          builder: (context) {
-                            return Backup();
-                          },
-                          settings: RouteSettings(name: "backup")),
-                    );
-                  },
-                ),
-                SettingItem(
-                  name: "问题反馈",
-                  icon: "feedback",
-                  onPressed: () async {
-                    FeedbackDialog.show(context: context);
-                  },
-                ),
-              ],
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  SettingItem(
+                    name: "主题",
+                    icon: "theme",
+                    onPressed: onTheme,
+                  ),
+                  SettingItem(
+                    name: "终端",
+                    icon: "terminal",
+                    onPressed: () {
+                      context.push(SelectTerminalServer(), name: "select_server");
+                    },
+                  ),
+                  SettingItem(
+                    name: "相册备份",
+                    icon: "upload_cloud",
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (context) => Backup(),
+                          settings: RouteSettings(name: "backup"),
+                        ),
+                      );
+                    },
+                  ),
+                  SettingItem(
+                    name: "检查更新",
+                    icon: "update",
+                    onPressed: () async {
+                      final Uri url = Uri.parse('https://github.com/visense/dsm-helper/releases');
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(url);
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
+            SizedBox(height: 20),
           ],
         ),
       ),

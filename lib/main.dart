@@ -47,14 +47,18 @@ void main() async {
     final completer = Completer<String>();
     for (String domain in domains) {
       try {
-        Utils.get(domain).then((res) {
-          if (res != null && res['code'] == 1) {
-            if (!completer.isCompleted) {
-              completer.complete("http://${res['data']}");
-            }
+        var res = await Utils.get(domain);
+        if (res != null && res['code'] == 1) {
+          if (!completer.isCompleted) {
+            completer.complete("https://${res['data']}");
           }
-        });
-      } catch (e) {}
+        }
+      } catch (e) {
+        print("Error checking domain $domain: $e");
+      }
+    }
+    if (!completer.isCompleted) {
+      completer.completeError("No available domain found");
     }
     return completer.future;
   }
