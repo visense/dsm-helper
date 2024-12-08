@@ -38,7 +38,7 @@ class SettingItem extends StatelessWidget {
       padding: EdgeInsets.zero,
       onPressed: onPressed,
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        margin: EdgeInsets.symmetric(vertical: 4),
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -333,9 +333,7 @@ class _SettingState extends State<Setting> {
     InitDataProvider initDataProvider = context.watch<InitDataProvider>();
     return GlassScaffold(
       appBar: GlassAppBar(
-        title: Text(
-          "设置",
-        ),
+        title: Text("设置"),
         actions: [
           CupertinoButton(
             onPressed: () {
@@ -348,232 +346,215 @@ class _SettingState extends State<Setting> {
           ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: ListView(
-          children: [
-            GestureDetector(
-              onTap: () {
-                context.push(UserSetting(), name: "user_setting").then((res) {
-                  if (res == true) {
-                    getNormalUser();
-                  }
-                });
-              },
-              child: SizedBox(
-                height: 170,
-                child: Stack(
-                  children: [
-                    if (initDataProvider.initData.userSettings?.desktop?.wallpaper != null && (initDataProvider.initData.userSettings!.desktop!.wallpaper!.customizeBackground == true))
-                      ExtendedImage.network(
-                        "${Api.dsm.baseUrl}/webapi/entry.cgi?api=SYNO.Core.PersonalSettings&method=wallpaper&version=1&path=%22%22&retina=true&_sid=${Api.dsm.sid}",
-                        height: 170,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(20),
-                      )
-                    else
-                      ExtendedImage.network(
-                        "${Api.dsm.baseUrl}/${(Utils.version == 7 ? DsmImage.v7() : DsmImage.v6()).desktopBackgroundImage}",
-                        height: 170,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    if (Theme.of(context).brightness == Brightness.dark)
-                      Container(
-                        height: 170,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                    Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                                  child: Container(
-                                    color: Colors.white24,
-                                    child: Image.asset(
-                                      "assets/devices/ds_923+.png",
-                                      width: 60,
-                                      height: 60,
-                                    ),
+      body: SafeArea(
+        child: Container(
+          margin: EdgeInsets.all(16),
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  context.push(UserSetting(), name: "user_setting").then((res) {
+                    if (res == true) {
+                      getNormalUser();
+                    }
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    image: DecorationImage(
+                      image: AssetImage("assets/default_login_background.jpg"),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                      child: Container(
+                        padding: EdgeInsets.all(16),
+                        color: Colors.black.withOpacity(0.1),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(5),
+                                  child: Image.asset(
+                                    "assets/devices/ds_923+.png",
+                                    width: 40,
+                                    height: 40,
                                   ),
                                 ),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        "${initDataProvider.initData.session?.user}",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        "${Api.dsm.baseUrl}",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.white70,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(
-                                      "${initDataProvider.initData.session?.user}",
-                                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, shadows: [BoxShadow(color: Colors.white, spreadRadius: 30, blurRadius: 15)]),
+                                    CupertinoButton(
+                                      padding: EdgeInsets.all(8),
+                                      onPressed: () async {
+                                        LogoutDialog.show(context: context).then((value) {
+                                          if (value == true) {
+                                            context.push(SelectServer(), name: "select_server", replace: true);
+                                          }
+                                        });
+                                      },
+                                      child: Image.asset(
+                                        "assets/icons/exit.png",
+                                        width: 20,
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                    Text(
-                                      "${Api.dsm.baseUrl}",
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(color: AppTheme.of(context)?.placeholderColor, fontSize: 14, shadows: [BoxShadow(color: Colors.white, spreadRadius: 30, blurRadius: 15)]),
+                                    CupertinoButton(
+                                      padding: EdgeInsets.all(8),
+                                      onPressed: () {
+                                        context.push(SelectServer(), name: "select_server");
+                                      },
+                                      child: Image.asset(
+                                        "assets/icons/change.png",
+                                        width: 20,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Spacer(),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                children: [
-                                  CupertinoButton(
-                                    onPressed: () async {
-                                      LogoutDialog.show(context: context).then((value) {
-                                        if (value == true) {
-                                          context.push(SelectServer(), name: "select_server", replace: true);
-                                        }
-                                      });
-                                    },
-                                    child: Image.asset(
-                                      "assets/icons/exit.png",
-                                      width: 20,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  CupertinoButton(
-                                    onPressed: () {
-                                      context.push(SelectServer(), name: "select_server");
-                                    },
-                                    child: Image.asset(
-                                      "assets/icons/change.png",
-                                      width: 20,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  if (terminal.enableSsh != null)
-                                    CupertinoButton(
-                                      onPressed: () async {
-                                        bool? enableSsh = await SshDialog.show(context: context, enable: !terminal.enableSsh!);
-                                        if (enableSsh != null) {
-                                          terminal.enableSsh = enableSsh;
-                                          try {
-                                            bool? res = await terminal.set();
-                                            if (res == true) {
-                                              setState(() {});
-                                            }
-                                          } on DsmException catch (e) {
-                                            if (e.code == 105) {
-                                              Utils.toast("高版本DSM禁止未加密接口修改SSH配置，请前往网页版手动设置");
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (terminal.enableSsh != null)
+                                      CupertinoButton(
+                                        padding: EdgeInsets.all(8),
+                                        onPressed: () async {
+                                          bool? enableSsh = await SshDialog.show(context: context, enable: !terminal.enableSsh!);
+                                          if (enableSsh != null) {
+                                            terminal.enableSsh = enableSsh;
+                                            try {
+                                              bool? res = await terminal.set();
+                                              if (res == true) {
+                                                setState(() {});
+                                              }
+                                            } on DsmException catch (e) {
+                                              if (e.code == 105) {
+                                                Utils.toast("高版本DSM禁止未加密接口修改SSH配置，请前往网页版手动设置");
+                                              }
                                             }
                                           }
-                                        }
-                                      },
-                                      child: Image.asset(
-                                        "assets/icons/ssh.png",
-                                        width: 20,
-                                        color: terminal.enableSsh! ? AppTheme.of(context)?.successColor : Colors.white,
+                                        },
+                                        child: Image.asset(
+                                          "assets/icons/ssh.png",
+                                          width: 20,
+                                          color: terminal.enableSsh! ? AppTheme.of(context)?.successColor : Colors.white,
+                                        ),
                                       ),
+                                    CupertinoButton(
+                                      padding: EdgeInsets.all(8),
+                                      onPressed: rebooting ? null : () => onShutdown(reboot: true),
+                                      child: rebooting
+                                          ? LoadingWidget(size: 20)
+                                          : Image.asset(
+                                              "assets/icons/reboot.png",
+                                              width: 20,
+                                              color: AppTheme.of(context)?.warningColor,
+                                            ),
                                     ),
-                                  CupertinoButton(
-                                    onPressed: rebooting
-                                        ? null
-                                        : () {
-                                            onShutdown(reboot: true);
-                                          },
-                                    child: rebooting
-                                        ? LoadingWidget(size: 20)
-                                        : Image.asset(
-                                            "assets/icons/reboot.png",
-                                            width: 20,
-                                            color: AppTheme.of(context)?.warningColor,
-                                          ),
-                                  ),
-                                  CupertinoButton(
-                                    onPressed: shuttingDown ? null : onShutdown,
-                                    child: shuttingDown
-                                        ? LoadingWidget(size: 20)
-                                        : Image.asset(
-                                            "assets/icons/shutdown.png",
-                                            width: 20,
-                                            color: AppTheme.of(context)?.errorColor,
-                                          ),
-                                  ),
-                                ],
-                              ),
+                                    CupertinoButton(
+                                      padding: EdgeInsets.all(8),
+                                      onPressed: shuttingDown ? null : onShutdown,
+                                      child: shuttingDown
+                                          ? LoadingWidget(size: 20)
+                                          : Image.asset(
+                                              "assets/icons/shutdown.png",
+                                              width: 20,
+                                              color: AppTheme.of(context)?.errorColor,
+                                            ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  SettingItem(
-                    name: "主题",
-                    icon: "theme",
-                    onPressed: onTheme,
+              SizedBox(height: 16),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SettingItem(
+                        name: "主题",
+                        icon: "theme",
+                        onPressed: onTheme,
+                      ),
+                      SettingItem(
+                        name: "终端",
+                        icon: "terminal",
+                        onPressed: () {
+                          context.push(SelectTerminalServer(), name: "select_server");
+                        },
+                      ),
+                      SettingItem(
+                        name: "相册备份",
+                        icon: "upload_cloud",
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            CupertinoPageRoute(
+                              builder: (context) => Backup(),
+                              settings: RouteSettings(name: "backup"),
+                            ),
+                          );
+                        },
+                      ),
+                      SettingItem(
+                        name: "检查更新",
+                        icon: "update",
+                        onPressed: () async {
+                          final Uri url = Uri.parse('https://github.com/visense/dsm-helper/releases');
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url);
+                          }
+                        },
+                      ),
+                    ],
                   ),
-                  SettingItem(
-                    name: "终端",
-                    icon: "terminal",
-                    onPressed: () {
-                      context.push(SelectTerminalServer(), name: "select_server");
-                    },
-                  ),
-                  SettingItem(
-                    name: "相册备份",
-                    icon: "upload_cloud",
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        CupertinoPageRoute(
-                          builder: (context) => Backup(),
-                          settings: RouteSettings(name: "backup"),
-                        ),
-                      );
-                    },
-                  ),
-                  SettingItem(
-                    name: "检查更新",
-                    icon: "update",
-                    onPressed: () async {
-                      final Uri url = Uri.parse('https://github.com/visense/dsm-helper/releases');
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url);
-                      }
-                    },
-                  ),
-                ],
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-          ],
+            ],
+          ),
         ),
       ),
     );
